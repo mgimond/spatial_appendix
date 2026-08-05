@@ -1,0 +1,14 @@
+purrr
+stringr
+dplyr
+terra
+sf
+tmap
+sp
+raster
+igraph
+Matrix
+gdistance
+ggplot2
+lattice
+rasterVis

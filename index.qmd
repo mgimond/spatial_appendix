@@ -1,0 +1,3 @@
+# Preface {.unnumbered}
+
+This appendix is intended to supplement an undergraduate course in [GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html). It provides tutorials that use R to perform many of the analyses presented in the accompanying textbook.

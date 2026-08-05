@@ -1,0 +1,35 @@
+project:
+  type: book
+
+execute:
+  freeze: auto
+  cache: true
+  warning: false
+  message: false
+
+book:
+  title: "Spatial Analysis Appendix"
+  author: "Manuel Gimond"
+  chapters:
+    - index.qmd
+    - a01_data_manipulation.qmd
+    - a02_mapping_data.qmd
+    - a03_sf_objects.qmd
+    - a04_vector_operations.qmd
+    - a05_mapping_rates.qmd
+    - a06_raster_operations.qmd
+    - a07_coordinate_systems.qmd
+    - a08_point_pattern_analysis.qmd
+    - a09_autocorrelation.qmd
+    - a10-interpolation.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+
+
+

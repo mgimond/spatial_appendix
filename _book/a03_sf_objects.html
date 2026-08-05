@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Anatomy of simple feature objects – Spatial Analysis Appendix</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./a04_vector_operations.html" rel="next">
+<link href="./a02_mapping_data.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./a03_sf_objects.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Anatomy of simple feature objects</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Analysis Appendix</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a01_data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reading and writing spatial data in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a02_mapping_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Mapping data in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a03_sf_objects.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Anatomy of simple feature objects</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a04_vector_operations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vector operations in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a05_mapping_rates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mapping rates in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a06_raster_operations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Raster operations in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a07_coordinate_systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Coordinate Systems in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a08_point_pattern_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Point pattern analysis in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a09_autocorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial autocorrelation in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a10-interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Interpolation in R</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#creating-point-sf-objects" id="toc-creating-point-sf-objects" class="nav-link active" data-scroll-target="#creating-point-sf-objects">Creating point ‘sf’ objects</a>
+  <ul class="collapse">
+  <li><a href="#step-1-create-the-point-geometry-sfg" id="toc-step-1-create-the-point-geometry-sfg" class="nav-link" data-scroll-target="#step-1-create-the-point-geometry-sfg">Step 1: Create the point geometry: <code>sfg</code></a></li>
+  <li><a href="#step-2-create-a-column-of-simple-feature-geometries-sfc" id="toc-step-2-create-a-column-of-simple-feature-geometries-sfc" class="nav-link" data-scroll-target="#step-2-create-a-column-of-simple-feature-geometries-sfc">Step 2: Create a column of simple feature geometries: <code>sfc</code></a></li>
+  <li><a href="#step-3-create-the-simple-feature-object-sf" id="toc-step-3-create-the-simple-feature-object-sf" class="nav-link" data-scroll-target="#step-3-create-the-simple-feature-object-sf">Step 3: Create the simple feature object <code>sf</code></a></li>
+  <li><a href="#renaming-the-geometry-column" id="toc-renaming-the-geometry-column" class="nav-link" data-scroll-target="#renaming-the-geometry-column">Renaming the geometry column</a></li>
+  <li><a href="#adding-attributes-to-an-sf-object" id="toc-adding-attributes-to-an-sf-object" class="nav-link" data-scroll-target="#adding-attributes-to-an-sf-object">Adding attributes to an <code>sf</code> object</a></li>
+  <li><a href="#adding-a-geometry-column-to-an-existing-non-spatial-dataframe" id="toc-adding-a-geometry-column-to-an-existing-non-spatial-dataframe" class="nav-link" data-scroll-target="#adding-a-geometry-column-to-an-existing-non-spatial-dataframe">Adding a geometry column to an existing non-spatial dataframe</a></li>
+  </ul></li>
+  <li><a href="#creating-polyline-sf-objects" id="toc-creating-polyline-sf-objects" class="nav-link" data-scroll-target="#creating-polyline-sf-objects">Creating polyline ‘sf’ objects</a>
+  <ul class="collapse">
+  <li><a href="#creating-branching-polyline-features" id="toc-creating-branching-polyline-features" class="nav-link" data-scroll-target="#creating-branching-polyline-features">Creating branching polyline features</a></li>
+  </ul></li>
+  <li><a href="#creating-polygon-sf-objects" id="toc-creating-polygon-sf-objects" class="nav-link" data-scroll-target="#creating-polygon-sf-objects">Creating polygon ‘sf’ objects</a>
+  <ul class="collapse">
+  <li><a href="#polygon-simple-feature" id="toc-polygon-simple-feature" class="nav-link" data-scroll-target="#polygon-simple-feature"><code>POLYGON</code> simple feature</a></li>
+  <li><a href="#multipolygon-simple-feature-multipart-features" id="toc-multipolygon-simple-feature-multipart-features" class="nav-link" data-scroll-target="#multipolygon-simple-feature-multipart-features"><code>MULTIPOLYGON</code> simple feature: multipart features</a></li>
+  </ul></li>
+  <li><a href="#extracting-geometry-from-an-sf-object" id="toc-extracting-geometry-from-an-sf-object" class="nav-link" data-scroll-target="#extracting-geometry-from-an-sf-object">Extracting geometry from an <code>sf</code> object</a></li>
+  <li><a href="#alternative-syntax" id="toc-alternative-syntax" class="nav-link" data-scroll-target="#alternative-syntax">Alternative syntax</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional resources</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Anatomy of simple feature objects</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="cell-output-display">
+<table class="package_ver_table caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">R</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">sf</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">ggplot2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">4.6.1</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">1.1.1</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">4.0.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This tutorial exposes you to the building blocks of simple feature objects via the the creation of point, polyline and polygon features from scratch.</p>
+<section id="creating-point-sf-objects" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="creating-point-sf-objects">Creating point ‘sf’ objects</h2>
+<p>We will start off by exploring the creation of a singlepart point feature object. There are three phases in creating a point simple feature (<code>sf</code>) object:</p>
+<ul>
+<li>Defining the coordinate pairs via a point geometry object, <code>sfg</code>;</li>
+<li>Creating a simple feature column object, <code>sfc</code>, from the point geometries;</li>
+<li>Creating the simple feature object, <code>sf</code>.</li>
+</ul>
+<section id="step-1-create-the-point-geometry-sfg" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="step-1-create-the-point-geometry-sfg">Step 1: Create the point geometry: <code>sfg</code></h3>
+<p>Here, we’ll create three separate point objects. We’ll adopt a geographic coordinate system, but note that we do not specify the coordinate system just yet.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>p1.sfg <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">45</span>)) </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>p2.sfg <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">44</span>)) </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>p3.sfg <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">45</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s check the class of one of these point geometries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p1.sfg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "XY"    "POINT" "sfg"  </code></pre>
+</div>
+</div>
+<p>What we are looking for is a <code>sfg</code> class. You’ll note other classes associated with this object such as <code>POINT</code> which defines the geometric primitive. You’ll see examples of other geometric primitives later in this tutorial.</p>
+<p>Note that if a multipart point feature object is desired, the <code>st_multipoint()</code> function needs to be used instead of <code>st_point()</code> with the coordinate pairs defined in matrix as in <code>st_multipoint(matrix( c(-70, 45, -69, 44, -69, 45), ncol = 2, byrow = TRUE  ) )</code>.</p>
+</section>
+<section id="step-2-create-a-column-of-simple-feature-geometries-sfc" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="step-2-create-a-column-of-simple-feature-geometries-sfc">Step 2: Create a column of simple feature geometries: <code>sfc</code></h3>
+<p>Next, we’ll combine the point geometries into a single object.</p>
+<p>Note that if you are to define a coordinate system for the features, you can do so here via the <code>crs=</code> parameter. We use the WGS 1984 reference system (EPSG code of <code>4326</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(p1.sfg, p2.sfg, p3.sfg), <span class="at">crs =</span> <span class="dv">4326</span> )</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p.sfc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sfc_POINT" "sfc"      </code></pre>
+</div>
+</div>
+<p>The object is a simple feature column, <code>sfc</code>. More specifically, we’ve combined the point geometries into a single object whereby each geometry is assigned its own row or, to be technical, each point was assigned its own component via the <code>list</code> function. You can can confirm that each point geometry is assigned its own row in the following output.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p.sfc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 3 features 
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>You can access each point using <code>list</code> operations. For example, to access the second point, type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p.sfc[[<span class="dv">2</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="step-3-create-the-simple-feature-object-sf" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="step-3-create-the-simple-feature-object-sf">Step 3: Create the simple feature object <code>sf</code></h3>
+<p>The final step is to create the simple feature object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(p.sfc)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>p.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 0 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84
+           p.sfc
+1 POINT (-70 45)
+2 POINT (-69 44)
+3 POINT (-69 45)</code></pre>
+</div>
+</div>
+</section>
+<section id="renaming-the-geometry-column" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="renaming-the-geometry-column">Renaming the geometry column</h3>
+<p>The above step generated a geometry column named after the input <code>sfc</code> object name (<code>p.sfc</code> in our example). This is perfectly functional since the <code>sf</code> object knows that this is the geometry column. We can confirm this by checking out <code>p.sf</code>’s attributes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(p.sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$names
+[1] "p.sfc"
+
+$row.names
+[1] 1 2 3
+
+$class
+[1] "sf"         "data.frame"
+
+$sf_column
+[1] "p.sfc"
+
+$agr
+factor()
+Levels: constant aggregate identity</code></pre>
+</div>
+</div>
+<p>What we are looking for is the <code>$sf_column</code> attribute which is , in our example, pointing to the <code>p.sfc</code> column. This attribute is critical in a spatial operation that makes use of the dataframe’s spatial objects. Functions that recognize <code>sf</code> objects will look for this attribute to identify the geometry column.</p>
+<p>You might chose to rename the column to something more meaningful such as <code>coords</code> (note that some spatially enabled databases adopt the name <code>geom</code>). You can use the <code>names()</code> function to rename that column, but note that you will need to re-define the geometry column in the attributes using the <code>st_geometry()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(p.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(p.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>p.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 0 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84
+          coords
+1 POINT (-70 45)
+2 POINT (-69 44)
+3 POINT (-69 45)</code></pre>
+</div>
+</div>
+</section>
+<section id="adding-attributes-to-an-sf-object" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="adding-attributes-to-an-sf-object">Adding attributes to an <code>sf</code> object</h3>
+<p>The <code>p.sf</code> object is nothing more than a dataframe with a geometry column of <code>list</code> data type.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(p.sf<span class="sc">$</span>coords)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "list"</code></pre>
+</div>
+</div>
+<p>Storing spatial features in a dataframe has many benefits, one of which is operating on the features’ attribute values. For example, we can add a new column with attribute values for each geometry entry. Here, we’ll assign letters to each point. Note that the order in which the attribute values are passed to the dataframe must match that of the geometry elements.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p.sf<span class="sc">$</span>val1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>p.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 1 field
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84
+          coords val1
+1 POINT (-70 45)    A
+2 POINT (-69 44)    B
+3 POINT (-69 45)    C</code></pre>
+</div>
+</div>
+<p>We can use <code>sf</code>’s <code>plot</code> function to view the points.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p.sf, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="273"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="adding-a-geometry-column-to-an-existing-non-spatial-dataframe" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="adding-a-geometry-column-to-an-existing-non-spatial-dataframe">Adding a geometry column to an existing non-spatial dataframe</h3>
+<p>A nifty property of the <code>sfc</code> object created in step 2 above is the ability to append it to an existing dataframe using the <code>st_geometry()</code> function. In the following example, we’ll create a dataframe, then append the geometry column to that dataframe.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">col1 =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>,<span class="st">"C"</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(df) <span class="ot">&lt;-</span> p.sfc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Note that once we’ve added the geometry column, <code>df</code> becomes a spatial feature object and the geometry column is assigned the name <code>geometry</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 1 field
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84
+  col1       geometry
+1    A POINT (-70 45)
+2    B POINT (-69 44)
+3    C POINT (-69 45)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="creating-polyline-sf-objects" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="creating-polyline-sf-objects">Creating polyline ‘sf’ objects</h2>
+<p>The steps are similar to creating a point object. You first create the geometry(ies), you then combine the geometry(ies) into a spatial feature column before creating the simple feature object.</p>
+<p>First, we need to define the vertices that will define each line segment of the polyline. The order in which the vertices are defined matters: The order defines each connecting line segment ends. The coordinate pairs of each vertex are stored in a matrix.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">45</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">45</span>) )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we create a polyline geometry object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>l.sfg <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(l)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we create the simple feature column. We also add the reference system definition (<code>crs = 4326</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>l.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">list</span>(l.sfg), <span class="at">crs =</span> <span class="dv">4326</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, we create the simple feature object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>l.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(l.sfc)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>l.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 44 xmax: -69 ymax: 45
+Geodetic CRS:  WGS 84
+                           l.sfc
+1 LINESTRING (-70 45, -69 44,...</code></pre>
+</div>
+</div>
+<p>Even though we have multiple line segments, they are all associated with a single polyline feature, hence they each share the same attribute.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">plot</span>(l.sf, <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">main =</span> <span class="cn">NULL</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="192"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="creating-branching-polyline-features" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="creating-branching-polyline-features">Creating branching polyline features</h3>
+<p>You can also create polyline features with branching segments (i.e.&nbsp;where at least one vertex is associated with more than two line segments). You simply need to make sure that the coordinate values for the overlapping vertices share the exact same values.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define coordinate pairs</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>l1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">45</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">45</span>) )</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>l2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">44</span>) )</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>l3 <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">68</span>, <span class="dv">43</span>) )</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simple feature geometry object</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>l.sfg <span class="ot">&lt;-</span> <span class="fu">st_multilinestring</span>(<span class="fu">list</span>(l1, l2, l3))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simple feature column object</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>l.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">list</span>(l.sfg), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simple feature object</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>l.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(l.sfc)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(l.sf, <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="168"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="creating-polygon-sf-objects" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="creating-polygon-sf-objects">Creating polygon ‘sf’ objects</h2>
+<p>General steps in creating a polygon <code>sf</code> spatial object from scratch include:</p>
+<ul>
+<li>Defining the vertices of each polygon in a matrix;</li>
+<li>Creating a list object from each matrix object (the list structure will differ between <code>POLYGON</code> and <code>MULTIPOLYGON</code> geometries);</li>
+<li>Creating an <code>sfg</code> polygon geometry object from the list;</li>
+<li>Creating an <code>sf</code> spatial object.</li>
+</ul>
+<p>Defining a polygon’s geometry is a bit more involved than a polyline in that a polygon defines an enclosed area. By convention, simple features record vertices coordinate pairs in a counterclockwise direction such that the area to the <strong>left</strong> of a polygon’s perimeter when traveling in the direction of the recorded vertices is the polygon’s “inside”. This is counter to the order in which vertices are recorded in a shapefile whereby the area to the <strong>right</strong> of the traveled path along the polygon’s perimeter is deemed “inside”.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A polygon hole has its ring defined in the opposite direction: clockwise for a simple feature object and counterclockwise for a shapefile.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For many applications in R, the ring direction will not matter, but for a few they might. So when possible, adopt the simple feature paradigm when defining the coordinate pairs. Note that importing a shapefile into an R session will usually automatically reverse the polygons’ ring direction.</p>
+<p>There are two types of polygon geometries that can be adopted depending on your needs: <code>POLYGON</code> and <code>MULTIPOLYGON</code>.</p>
+<section id="polygon-simple-feature" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="polygon-simple-feature"><code>POLYGON</code> simple feature</h3>
+<section id="a-plain-polygon" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="a-plain-polygon">A plain polygon</h4>
+<p>We’ll first create a simple polygon shaped like a triangle. The <code>sf</code> output structure will be similar to that for the <code>POINT</code> and <code>POLYLINE</code> objects with the coordinate pairs defining the polygon vertices stored in a geometry column.</p>
+<p><img src="img/sf_fig1.png" class="img-fluid"></p>
+<p>The polygon coordinate values are defined in a matrix. The last coordinate pair must match the first coordinate pair. The coordinate values will be recorded in a geographic coordinate system (latitude, longitude) but the reference system won’t be defined until the creation of the <code>sfc</code> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>poly1.crd <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">43</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">47</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>,<span class="dv">43</span>),  <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">43</span>) )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we create the <code>POLYGON</code> geometries. The polygon matrix needs to be wrapped in a list object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>poly1.geom <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>( <span class="fu">list</span>(poly1.crd ) )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We now have a polygon geometry.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>poly1.geom </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we create a simple feature column from the polygon geometry. We’ll also define the coordinate system used to report the coordinate values.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>poly.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(poly1.geom), <span class="at">crs =</span> <span class="dv">4326</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>poly.sfc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 1 feature 
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Finally, to create the <code>sf</code> object, run the <code>st_sf()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>poly.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(poly.sfc)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                        poly.sfc
+1 POLYGON ((-66 43, -70 47, -...</code></pre>
+</div>
+</div>
+<p>The coordinates column is assigned the name <code>poly.sfc</code> by default. If you wish to change the column name to <code>coords</code>, for example, type the following:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                          coords
+1 POLYGON ((-66 43, -70 47, -...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(poly.sf, <span class="at">col =</span> <span class="st">"bisque"</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="168"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="a-polygon-with-a-hole" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="a-polygon-with-a-hole">A polygon with a hole</h4>
+<p>In this example, we’ll add a hole to the polygon. Recall that its outer ring will need to be recorded in a counterclockwise direction and its hole in a clockwise direction.</p>
+<p>The resulting data object will have the following structure.</p>
+<p><img src="img/sf_fig2.png" class="img-fluid"></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polygon 1</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>poly1.outer.crd <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">43</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>, <span class="dv">47</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>,<span class="dv">43</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">43</span>) ) <span class="co"># Outer ring</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>poly1.inner.crd  <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">68</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>,<span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>, <span class="dv">45</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">68</span>, <span class="dv">44</span>) ) <span class="co"># Inner ring</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we combine the ring coordinates into a single geometric element. Note that this is done by combining the two coordinate matrices into a single list object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>poly1.geom <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>( <span class="fu">list</span>(poly1.outer.crd, poly1.inner.crd))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We now create the simple feature column object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>poly.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(poly1.geom), <span class="at">crs =</span> <span class="dv">4326</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, to create the <code>sf</code> object, run the <code>st_sf()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>poly.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(poly.sfc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We’ll take the opportunity to rename the coordinate column (even though this is not necessary).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                          coords
+1 POLYGON ((-66 43, -70 47, -...</code></pre>
+</div>
+</div>
+<p>Let’s now plot the <code>sf</code> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(poly.sf, <span class="at">col =</span> <span class="st">"bisque"</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="168"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="combining-polygons-singlepart-features" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="combining-polygons-singlepart-features">Combining polygons: singlepart features</h4>
+<p>In this example, we’ll create two distinct polygons by adding a second polygon to the one created in the last step. The output will be a singlepart polygon feature (i.e.&nbsp;each polygon can be assigned its own unique attribute value).</p>
+<p><img src="img/sf_fig3.png" class="img-fluid"></p>
+<p>We’ll create the second polygon (the first polygon having already been created in the previous section).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define coordinate matrix</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>poly2.crd <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">67</span>, <span class="dv">45</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">67</span>, <span class="dv">47</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">69</span>,<span class="dv">47</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">67</span>, <span class="dv">45</span>) ) </span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create polygon geometry</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>poly2.geom <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>( <span class="fu">list</span>(poly2.crd))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we combine the geometries into a simple feature column, <code>sfc</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>poly.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(poly1.geom , poly2.geom), <span class="at">crs =</span> <span class="dv">4326</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Each polygon has its own row in the <code>sfc</code> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>poly.sfc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 2 features 
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Finally, to create the <code>sf</code> object, run the <code>st_sf()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>poly.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(poly.sfc)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 0 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                        poly.sfc
+1 POLYGON ((-66 43, -70 47, -...
+2 POLYGON ((-67 45, -67 47, -...</code></pre>
+</div>
+</div>
+<p>We’ll go ahead and rename the geometry column to <code>coords</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(poly.sf) <span class="ot">&lt;-</span> <span class="st">"coords"</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 0 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                          coords
+1 POLYGON ((-66 43, -70 47, -...
+2 POLYGON ((-67 45, -67 47, -...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(poly.sf, <span class="at">col =</span> <span class="st">"bisque"</span>, <span class="at">axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="168"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="adding-attributes" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="adding-attributes">Adding attributes</h4>
+<p>As with the point <code>sf</code> object created earlier in this exercise, we can append columns to the polygon <code>sf</code> object. But make sure that the order of the attribute values match the order in which the polygons are stored in the <code>sf</code> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>poly.sf<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>poly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 1 field
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                          coords id
+1 POLYGON ((-66 43, -70 47, -...  A
+2 POLYGON ((-67 45, -67 47, -...  B</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(poly.sf[<span class="st">"id"</span>],  <span class="at">axes =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="multipolygon-simple-feature-multipart-features" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="multipolygon-simple-feature-multipart-features"><code>MULTIPOLYGON</code> simple feature: multipart features</h3>
+<p>If multiple polygons are to share the same attribute record (a scenario referred to as multipart geometry in some GIS applications), you need to use the <code>st_multipolygon()</code> function when creating the <code>sfg</code> object.</p>
+<p>In this example, we’ll combine the two polygon created in the last example into a single geometry element.</p>
+<p><img src="./img/sf_fig4.png" class="img-fluid"></p>
+<p>The multipolygon function groups polygons into a single list. If one of the polygons is made up of more than one ring (e.g.&nbsp;a polygon with a whole), its geometry is combined into a single sub-list object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create multipolygon geometry</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>mpoly1.sfg  <span class="ot">&lt;-</span> <span class="fu">st_multipolygon</span>( <span class="fu">list</span>(</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>( poly1.outer.crd,  <span class="co"># Outer loop</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>                                        poly1.inner.crd), <span class="co"># Inner loop</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>( poly2.crd)) )     <span class="co"># Separate polygon</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simple feature column object</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>mpoly.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(mpoly1.sfg), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create simple feature object</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>mpoly.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(mpoly.sfc)</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>mpoly.sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+Geodetic CRS:  WGS 84
+                       mpoly.sfc
+1 MULTIPOLYGON (((-66 43, -70...</code></pre>
+</div>
+</div>
+<p>Note the single geometric entry in the table.</p>
+<section id="mixing-singlepart-and-multipart-elements" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="mixing-singlepart-and-multipart-elements">Mixing singlepart and multipart elements</h4>
+<p>A <code>MULTIPOLGON</code> geometry can be used to store a single polygon as well. In this example, we’ll create a <code>MULTIPOLYGON</code> <code>sf</code> object that will combine multipart and singlepart polygons.</p>
+<p><img src="img/sf_fig5.png" class="img-fluid"></p>
+<p>To make this example more interesting, we’ll have one of the elements (<code>poly4.coords</code>) overlapping several polygons. Note that any overlapping polygon needs to be in its own <code>MULTIPOLYGON</code> or <code>POLYGON</code> entry–if it’s added to an existing entry (i.e.&nbsp;combined with another polygon geometry), it may be treated as a hole, even if the coordinate values are recorded in a counterclockwise direction.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>poly3.coords <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">64</span>, <span class="dv">44</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>,<span class="dv">47</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">66</span>, <span class="dv">44</span>) )</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>poly4.coords <span class="ot">&lt;-</span> <span class="fu">rbind</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">67</span>, <span class="dv">43</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">64</span>, <span class="dv">46</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="fl">66.5</span>,<span class="dv">46</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">67</span>, <span class="dv">43</span>) ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Note the embedded <code>list()</code> functions in the following code chunk.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>mpoly1.sfg  <span class="ot">&lt;-</span> <span class="fu">st_multipolygon</span>( <span class="fu">list</span>(</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>( poly1.outer.crd,  <span class="co"># Outer loop</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>                                        poly1.inner.crd), <span class="co"># Inner loop</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>( poly2.crd)) )     <span class="co"># Separate poly</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>mpoly2.sfg  <span class="ot">&lt;-</span> <span class="fu">st_multipolygon</span>( <span class="fu">list</span>(</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>(poly3.coords)))  <span class="co"># Unique polygon</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>mpoly3.sfg  <span class="ot">&lt;-</span> <span class="fu">st_multipolygon</span>( <span class="fu">list</span>(</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">list</span>(poly4.coords)) )  <span class="co"># Unique polygon</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, we’ll generate the simple feature object, <code>sf</code>, via the creation of the simple feature column object, <code>sfc</code>. We’ll also assign the WGS 1984 geographic coordinate system (epsg = <code>4326</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>mpoly.sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>( <span class="fu">list</span>(mpoly1.sfg, mpoly2.sfg, mpoly3.sfg), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>mpoly.sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(mpoly.sfc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we’ll add attribute values to each geometric object before generating a plot. We’ll apply a transparency to the polygons to reveal the overlapping geometries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>mpoly.sf<span class="sc">$</span>ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpoly.sf[<span class="st">"ids"</span>], <span class="at">axes =</span> <span class="cn">TRUE</span>, <span class="at">main =</span> <span class="cn">NULL</span>,</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">pal =</span> <span class="fu">sf.colors</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">categorical =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="a03_sf_objects_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Note how polygon <code>C</code> overlaps the other polygon elements. We can check that this does not violate simple feature rules via the <code>st_is_valid()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_is_valid</span>(mpoly.sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE TRUE TRUE</code></pre>
+</div>
+</div>
+<p>This returns three boolean values, one for each element. A value of <code>TRUE</code> indicates that the geometry does not violate any rule.</p>
+<p>Avoid storing overlapping polygons in a same MULTIPOLYGON geometry. Doing so will create an “invalid” <code>sf</code> object which may pose problems with certain functions.</p>
+</section>
+</section>
+</section>
+<section id="extracting-geometry-from-an-sf-object" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="extracting-geometry-from-an-sf-object">Extracting geometry from an <code>sf</code> object</h2>
+<p>You can extract the geometry from an <code>sf</code> object via the <code>st_geometry</code> function. For example,</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create sfc from sf</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpoly.sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 3 features 
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -64 ymax: 47
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>To extract coordinates from a single record in a WKT (well known text) format, type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpoly.sf)[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If you want the extract the coordinate pairs of the first element in a list format type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpoly.sf)[[<span class="dv">1</span>]][]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[[1]][[1]]
+     [,1] [,2]
+[1,]  -66   43
+[2,]  -70   47
+[3,]  -70   43
+[4,]  -66   43
+
+[[1]][[2]]
+     [,1] [,2]
+[1,]  -68   44
+[2,]  -69   44
+[3,]  -69   45
+[4,]  -68   44
+
+
+[[2]]
+[[2]][[1]]
+     [,1] [,2]
+[1,]  -67   45
+[2,]  -67   47
+[3,]  -69   47
+[4,]  -67   45</code></pre>
+</div>
+</div>
+</section>
+<section id="alternative-syntax" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="alternative-syntax">Alternative syntax</h2>
+<p>In this tutorial, you were instructed to define the coordinate pairs in matrices. This is probably the simplest way to enter coordinate values manually. You can, however, bypass the creation of a matrix and simply define the coordinate pairs using the WKT syntax.</p>
+<p>For example, to generate the <code>POLYGON</code> geometry object from above, you could simply type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_as_sfc</span>(  <span class="st">"POLYGON ((-66 43, -70 47, -70 43, -66 43), (-68 44, -69 44, -69 45, -68 44))"</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 1 feature 
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -70 ymin: 43 xmax: -66 ymax: 47
+CRS:           NA</code></pre>
+</div>
+</div>
+<p>Note that the WKT syntax is that listed in the <code>sfc</code> and <code>sf</code> geometry columns. Also note that the function <code>st_as_sfc</code> is used as opposed to the <code>st_sfc</code> function used with matrices in earlier steps.</p>
+</section>
+<section id="additional-resources" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="additional-resources">Additional resources</h2>
+<ul>
+<li>Pebesma, Edzer. 2018. “Simple Features for R: Standardized Support for Spatial Vector Data”, The R Journal, pages 439-446.</li>
+<li>Pebesma, Edzar and Bivand, Roger. “Spatial Data Science: with applications in R”, <a href="https://keen-swartz-3146c4.netlify.app/" class="uri">https://keen-swartz-3146c4.netlify.app/</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./a02_mapping_data.html" class="pagination-link" aria-label="Mapping data in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Mapping data in R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./a04_vector_operations.html" class="pagination-link" aria-label="Vector operations in R">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vector operations in R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

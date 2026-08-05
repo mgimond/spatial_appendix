@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Reading and writing spatial data in R – Spatial Analysis Appendix</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./a02_mapping_data.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./a01_data_manipulation.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reading and writing spatial data in R</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Analysis Appendix</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a01_data_manipulation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reading and writing spatial data in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a02_mapping_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Mapping data in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a03_sf_objects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Anatomy of simple feature objects</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a04_vector_operations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Vector operations in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a05_mapping_rates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mapping rates in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a06_raster_operations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Raster operations in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a07_coordinate_systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Coordinate Systems in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a08_point_pattern_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Point pattern analysis in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a09_autocorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Spatial autocorrelation in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./a10-interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Interpolation in R</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#app1_2" id="toc-app1_2" class="nav-link active" data-scroll-target="#app1_2">Sample files for this exercise</a></li>
+  <li><a href="#app1_3" id="toc-app1_3" class="nav-link" data-scroll-target="#app1_3">Introduction</a></li>
+  <li><a href="#app1_4" id="toc-app1_4" class="nav-link" data-scroll-target="#app1_4">Creating spatial objects</a>
+  <ul class="collapse">
+  <li><a href="#app1_4_1" id="toc-app1_4_1" class="nav-link" data-scroll-target="#app1_4_1">Reading a shapefile</a></li>
+  <li><a href="#app1_4_2" id="toc-app1_4_2" class="nav-link" data-scroll-target="#app1_4_2">Reading a GeoPackage</a></li>
+  <li><a href="#app1_4_3" id="toc-app1_4_3" class="nav-link" data-scroll-target="#app1_4_3">Reading a raster</a></li>
+  <li><a href="#app1_4_5" id="toc-app1_4_5" class="nav-link" data-scroll-target="#app1_4_5">Creating a spatial object from a data frame</a></li>
+  <li><a href="#app1_4_6" id="toc-app1_4_6" class="nav-link" data-scroll-target="#app1_4_6">Geocoding street addresses</a></li>
+  </ul></li>
+  <li><a href="#app1_5" id="toc-app1_5" class="nav-link" data-scroll-target="#app1_5">Converting from an <code>sf</code> object</a>
+  <ul class="collapse">
+  <li><a href="#app1_5_1" id="toc-app1_5_1" class="nav-link" data-scroll-target="#app1_5_1">Converting an <code>sf</code> object to a <code>Spatial*</code> object (<code>spdep</code>/<code>sp</code>)</a></li>
+  <li><a href="#app1_5_2" id="toc-app1_5_2" class="nav-link" data-scroll-target="#app1_5_2">Converting an <code>sf</code> polygon object to an <code>owin</code> object</a></li>
+  <li><a href="#app1_5_3" id="toc-app1_5_3" class="nav-link" data-scroll-target="#app1_5_3">Converting an <code>sf</code> point object to a <code>ppp</code> object</a></li>
+  <li><a href="#app1_5_4" id="toc-app1_5_4" class="nav-link" data-scroll-target="#app1_5_4">Converting a <code>SpatRaster</code> object to an <code>im</code> object</a></li>
+  </ul></li>
+  <li><a href="#app1_6" id="toc-app1_6" class="nav-link" data-scroll-target="#app1_6">Converting to an <code>sf</code> object</a></li>
+  <li><a href="#app1_7" id="toc-app1_7" class="nav-link" data-scroll-target="#app1_7">Dissecting the <code>sf</code> file object</a></li>
+  <li><a href="#app1_8" id="toc-app1_8" class="nav-link" data-scroll-target="#app1_8">Exporting to different data file formats</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reading and writing spatial data in R</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="cell-output-display">
+<table class="package_ver_table caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">R</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">sf</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">terra</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">tidygeocoder</td>
+<td style="text-align: left; color: black !important; background-color: rgba(255, 193, 120, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">spatstat</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">4.6.1</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">1.1.1</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">1.9.34</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">1.0.6</td>
+<td style="text-align: left; color: white !important; background-color: rgba(170, 170, 170, 1) !important; font-size: 12px !important; margin: 5px; border-radius: 8px; border: 2px solid white; padding-top: 1px; padding-bottom: 1px; padding-left: 4px; padding-right: 4px;">3.6.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="app1_2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_2">Sample files for this exercise</h2>
+<p>First, you will need to download some sample files from the github repository. Make sure to set your R session folder to the directory where you will want to save the sample files before running the following code chunks.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://github.com/mgimond/spatial_appendix/raw/main/Data/Income_schooling.zip"</span>, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">destfile =</span> <span class="st">"Income_schooling.zip"</span> , <span class="at">mode=</span><span class="st">'wb'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"Income_schooling.zip"</span>, <span class="at">exdir =</span> <span class="st">"."</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">"Income_schooling.zip"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://github.com/mgimond/spatial_appendix/raw/main/Data/rail_inters.gpkg"</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">"./rail_inters.gpkg"</span>, <span class="at">mode=</span><span class="st">'wb'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://github.com/mgimond/spatial_appendix/raw/main/Data/elev.img"</span>,  </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">"./elev.img"</span>, <span class="at">mode=</span><span class="st">'wb'</span>)               </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="app1_3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_3">Introduction</h2>
+<p>There are several different R spatial formats to choose from. Your choice of format will largely be dictated by the package(s) and or function(s) used in your workflow. A breakdown of formats and intended use are listed below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: right; color: white !important; background-color: rgba(110, 110, 110, 1) !important;">Data format</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; color: white !important; background-color: rgba(110, 110, 110, 1) !important;">Used with...</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; color: white !important; background-color: rgba(110, 110, 110, 1) !important;">Used in package...</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; color: white !important; background-color: rgba(110, 110, 110, 1) !important;">Used for...</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; color: white !important; background-color: rgba(110, 110, 110, 1) !important;">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">`sf`</td>
+<td style="text-align: center;">vector</td>
+<td style="text-align: center;">`sf`, others</td>
+<td style="text-align: left;">visualizing, manipulating, querying</td>
+<td style="text-align: left;">This is the new spatial standard in R. Will also read from spatially enabled databases such as postgresSQL.</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">`raster`</td>
+<td style="text-align: center;">raster</td>
+<td style="text-align: center;">`raster`, others</td>
+<td style="text-align: left;">visualizing, manipulating, spatial statistics</td>
+<td style="text-align: left;">This has been the most popular raster format fo rmany years. But, it is gradually being supplanted by `terra`</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">`SpatRaster`</td>
+<td style="text-align: center;">terra</td>
+<td style="text-align: center;">`terra`, others</td>
+<td style="text-align: left;">visualizing, manipulating, spatial statistics</td>
+<td style="text-align: left;">This is gradually replacing `raster`</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">`SpatialPoints*` `SpatialPolygons*` `SpatialLines*` `SpatialGrid*`</td>
+<td style="text-align: center;">vector and raster</td>
+<td style="text-align: center;">`sp`, `spdep`</td>
+<td style="text-align: left;">Visualizing, spatial statistics</td>
+<td style="text-align: left;">These are legacy formats. `spdep` now accepts `sf` objects</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">`ppp` `owin`</td>
+<td style="text-align: center;">vector</td>
+<td style="text-align: center;">`spatstat`</td>
+<td style="text-align: left;">Point pattern analysis/statistics</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">`im`</td>
+<td style="text-align: center;">raster</td>
+<td style="text-align: center;">`spatstat`</td>
+<td style="text-align: left;">Point pattern analysis/statistics</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: right; padding: 0;"><sup>1</sup> The `spatial*` format includes SpatialPointsDataFrame, SpatialPolygonsDataFrame, SpatialLinesDataFrame, etc...</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+<p>There is an attempt at standardizing the spatial format in the R ecosystem by adopting a well established set of spatial standards known as <a href="https://en.wikipedia.org/wiki/Simple_Features">simple features</a>. This effort results in a recently developed package called <a href="https://r-spatial.github.io/sf/"><code>sf</code></a> <span class="citation" data-cites="sf">(<a href="#ref-sf" role="doc-biblioref"><strong>sf?</strong></a>)</span>. It is therefore recommended that you work in an <code>sf</code> framework when possible. As of this writing, most of the <em>basic</em> data manipulation and visualization operations can be successfully conducted using <code>sf</code> spatial objects.</p>
+<p>Some packages such as <code>spdep</code> and <code>spatstat</code> require specialized data object types. This tutorial will highlight some useful conversion functions for this purpose.</p>
+</section>
+<section id="app1_4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_4">Creating spatial objects</h2>
+<p>The following sections demonstrate different spatial data object creation strategies.</p>
+<section id="app1_4_1" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_4_1">Reading a shapefile</h3>
+<p>Shapefiles consist of many files sharing the same core filename and different suffixes (i.e.&nbsp;file extensions). For example, the sample shapefile used in this exercise consists of the following files:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Income_schooling.dbf" "Income_schooling.prj" "Income_schooling.sbn" "Income_schooling.sbx"
+[5] "Income_schooling.shp" "Income_schooling.shx"</code></pre>
+</div>
+</div>
+<p>Note that the number of files associated with a shapefile can vary. <code>sf</code> only needs to be given the <code>*.shp</code> name. It will then know which other files to read into R such as projection information and attribute table.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>s.sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"Income_schooling.shp"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s view the first few records in the spatial data object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s.sf, <span class="at">n=</span><span class="dv">4</span>)  <span class="co"># List spatial object and the first 4 attribute records</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 4 features and 5 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 379071.8 ymin: 4936182 xmax: 596500.1 ymax: 5255569
+Projected CRS: NAD83 / UTM zone 19N
+         NAME Income   NoSchool NoSchoolSE IncomeSE                       geometry
+1   Aroostook  21024 0.01338720 0.00140696  250.909 MULTIPOLYGON (((513821.1 51...
+2    Somerset  21025 0.00521153 0.00115002  390.909 MULTIPOLYGON (((379071.8 50...
+3 Piscataquis  21292 0.00633830 0.00212896  724.242 MULTIPOLYGON (((445039.5 51...
+4   Penobscot  23307 0.00684534 0.00102545  242.424 MULTIPOLYGON (((472271.3 49...</code></pre>
+</div>
+</div>
+<p>Note that the <code>sf</code> object stores not only the geometry but the coordinate system information and attribute data as well. These will be explored later in this exercise.</p>
+</section>
+<section id="app1_4_2" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_4_2">Reading a GeoPackage</h3>
+<p>A geopackage can store more than one layer. To list the layers available in the geopackage, type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_layers</span>(<span class="st">"rail_inters.gpkg"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Driver: GPKG 
+Available layers:
+  layer_name     geometry_type features fields             crs_name
+1 Interstate Multi Line String       35      1                NAD83
+2       Rail Multi Line String      730      3 NAD83 / UTM zone 19N</code></pre>
+</div>
+</div>
+<p>In this example, we have two separate layers: <code>Interstate</code> and <code>Rail</code>. We can extract each layer separately via the <code>layer=</code> parameter.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>inter.sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"rail_inters.gpkg"</span>, <span class="at">layer=</span><span class="st">"Interstate"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>rail.sf  <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"rail_inters.gpkg"</span>, <span class="at">layer=</span><span class="st">"Rail"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="app1_4_3" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_4_3">Reading a raster</h3>
+<blockquote class="blockquote">
+<p>In earlier versions of this tutorial, the <code>raster</code> package was used to read raster files. This is being supplanted by <code>terra</code> which will be the package used in this and in subsequent exercises.</p>
+</blockquote>
+<p><code>terra</code> will read many different raster file formats such as geoTiff, Imagine and HDF5 just to name a few. To see a list of supported raster file formats on your computer simply run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">gdal</span>(<span class="at">drivers =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">subset</span>(type <span class="sc">==</span> <span class="st">"raster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>In the following example, an <em>Imagine</em> raster file is read into R using the <code>rast</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>elev.r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">"elev.img"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The object class is of type <code>SpatRaster</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(elev.r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SpatRaster"
+attr(,"package")
+[1] "terra"</code></pre>
+</div>
+</div>
+<p>What sets a <code>SpatRaster</code> object apart from other R data file objects is its storage. By default, data files are loaded into memory, but <code>SpatRaster</code> objects are not. This can be convenient when working with raster files too large for memory. But this comes at a performance cost. If your RAM is large enough to handle your raster file, it’s best to load the entire dataset into memory.</p>
+<p>To check if the <code>elev.r</code> object is loaded into memory, run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inMemory</span>(elev.r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>An output of <code>FALSE</code> indicates that it is not. To force the raster into memory use <code>set.values</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.values</span>(elev.r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster
+size        : 994, 652, 1  (nrow, ncol, nlyr)
+resolution  : 500, 500  (x, y)
+extent      : 336630.3, 662630.3, 4759303, 5256303  (xmin, xmax, ymin, ymax)
+coord. ref. : NAD83 / UTM zone 19N (EPSG:26919)
+source(s)   : memory
+varname     : elev
+name        : Layer_1
+min value   :       0
+max value   :    1546</code></pre>
+</div>
+</div>
+<p>Let’s check that the raster is indeed loaded into memory:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inMemory</span>(elev.r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Now let’s look at the raster’s properties:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>elev.r</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster
+size        : 994, 652, 1  (nrow, ncol, nlyr)
+resolution  : 500, 500  (x, y)
+extent      : 336630.3, 662630.3, 4759303, 5256303  (xmin, xmax, ymin, ymax)
+coord. ref. : NAD83 / UTM zone 19N (EPSG:26919)
+source(s)   : memory
+varname     : elev
+name        : Layer_1
+min value   :       0
+max value   :    1546</code></pre>
+</div>
+</div>
+<p>The raster object returns its grid dimensions (number of rows and columns), pixel size/resolution (in the layer’s coordinate system units), geographic extent, native coordinate system (UTM NAD83 Zone 19 with units of meters) and min/max raster values.</p>
+</section>
+<section id="app1_4_5" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_4_5">Creating a spatial object from a data frame</h3>
+<p>Geographic point data locations recorded in a spreadsheet can be converted to a spatial point object. Note that it’s important that you specify the coordinate system used to record the coordinate pairs since such information is not stored in a data frame. In the following example, the coordinate values are recorded in a WGS 1984 geographic coordinate system (<code>crs = 4326</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a simple dataframe with lat/long values</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lon =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">68.783</span>, <span class="sc">-</span><span class="fl">69.6458</span>, <span class="sc">-</span><span class="fl">69.7653</span>),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">lat =</span> <span class="fu">c</span>(<span class="fl">44.8109</span>, <span class="fl">44.5521</span>, <span class="fl">44.3235</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">Name=</span> <span class="fu">c</span>(<span class="st">"Bangor"</span>, <span class="st">"Waterville"</span>, <span class="st">"Augusta"</span>))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the dataframe to a spatial object. Note that the</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># crs= 4326 parameter assigns a WGS84 coordinate system to the </span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># spatial object</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>p.sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(df, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>) </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>p.sf  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 1 field
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -69.7653 ymin: 44.3235 xmax: -68.783 ymax: 44.8109
+Geodetic CRS:  WGS 84
+        Name                 geometry
+1     Bangor  POINT (-68.783 44.8109)
+2 Waterville POINT (-69.6458 44.5521)
+3    Augusta POINT (-69.7653 44.3235)</code></pre>
+</div>
+</div>
+</section>
+<section id="app1_4_6" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_4_6">Geocoding street addresses</h3>
+<p>The <code>tidygeocoder</code> package will convert street addresses to latitude/longitude coordinate pairs using a wide range of geocoding services such as the US census and Google. Some of these geocoding services will require an API key, others will not. Click <a href="https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html">here</a> to see the list of geocoding services supported by <code>tidygeocoder</code> and their geocoding limitations. In the example that follows, the <code>osm</code> geocoding service is used by default.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygeocoder)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">pillar.sigfig =</span> <span class="dv">7</span>) <span class="co"># Increase significant digits in displayed output</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"Colby College"</span>, <span class="st">"Bates College"</span>, <span class="st">"Bowdoin College"</span>),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">address =</span> <span class="fu">c</span>(<span class="st">"4000 Mayflower drive, Waterville, ME , 04901"</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>              <span class="st">"275 College st, Lewiston, ME 04240"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>              <span class="st">"255 Maine St, Brunswick, ME 04011"</span>))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">geocode</span>(<span class="at">.tbl =</span> dat, <span class="at">address =</span> address, <span class="at">method =</span> <span class="st">"osm"</span>)           </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  name            address                                           lat      long
+  &lt;chr&gt;           &lt;chr&gt;                                           &lt;dbl&gt;     &lt;dbl&gt;
+1 Colby College   4000 Mayflower drive, Waterville, ME , 04901 44.55966 -69.65807
+2 Bates College   275 College st, Lewiston, ME 04240           44.10638 -70.20636
+3 Bowdoin College 255 Maine St, Brunswick, ME 04011            43.90641 -69.96424</code></pre>
+</div>
+</div>
+<p>Another free (but manual) alternative, is to use the US Census Bureau’s web <a href="https://geocoding.geo.census.gov/geocoder/locations/addressbatch?form">geocoding service</a> for creating lat/lon values from a file of US street addresses. This needs to be completed via their web interface and the resulting data table (a CSV file) would then need to be loaded into R as a data frame.</p>
+</section>
+</section>
+<section id="app1_5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_5">Converting from an <code>sf</code> object</h2>
+<p>Packages such as <code>spdep</code> (older versions only) and <code>spatsat</code> do not support <code>sf</code> objects. The following sections demonstrate methods to convert from <code>sf</code> to other formats.</p>
+<section id="app1_5_1" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_5_1">Converting an <code>sf</code> object to a <code>Spatial*</code> object (<code>spdep</code>/<code>sp</code>)</h3>
+<p>The following code will convert point, polyline or polygon features to a <code>spatial*</code> object. While the current version of <code>spdep</code> will now accept <code>sf</code> objects, converting to <code>spatial*</code> objects will be necessary with legacy <code>spdep</code> packages. In this example, an <code>sf</code> polygon feature is converted to a <code>SpatialPolygonsDataFrame</code> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>s.sp <span class="ot">&lt;-</span> <span class="fu">as_Spatial</span>(s.sf)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(s.sp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SpatialPolygonsDataFrame"
+attr(,"package")
+[1] "sp"</code></pre>
+</div>
+</div>
+</section>
+<section id="app1_5_2" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_5_2">Converting an <code>sf</code> polygon object to an <code>owin</code> object</h3>
+<p>The <code>spatstat</code> package is used to analyze point patterns however, in most cases, the study extent needs to be explicitly defined by a polygon object. The polygon should be of class <code>owin</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatstat)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>s.owin <span class="ot">&lt;-</span> <span class="fu">as.owin</span>(s.sf)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(s.owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "owin"</code></pre>
+</div>
+</div>
+<p>Note the loading of the package <code>spatstat</code>. This is required to access the <code>as.owin.sf</code> method for <code>sf</code>. Note too that the attribute table gets stripped from the polygon data. This is usually fine given that the only reason for converting a polygon to an <code>owin</code> format is for delineating the study boundary.</p>
+</section>
+<section id="app1_5_3" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_5_3">Converting an <code>sf</code> point object to a <code>ppp</code> object</h3>
+<p>The <code>spatstat</code> package is currently designed to work with projected (planar) coordinate system. If you attempt to convert a point object that is in a geographic coordinate system, you will get the following error message:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>p.ppp <span class="ot">&lt;-</span> <span class="fu">as.ppp</span>(p.sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! Only projected coordinates may be converted to spatstat class objects</code></pre>
+</div>
+</div>
+<p>The error message reminds us that a geographic coordinate system (i.e.&nbsp;one that uses angular measurements such as latitude/longitude) cannot be used with this package. If you encounter this error, you will need to project the point object to a projected coordinate system.</p>
+<p>In this example, we’ll project the <code>p.sf</code> object to a UTM coordinate system (<code>epsg=32619</code>). Coordinate systems in R are treated in a later appendix.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>p.sf.utm <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(p.sf, <span class="dv">32619</span>) <span class="co"># project from geographic to UTM</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>p.ppp <span class="ot">&lt;-</span> <span class="fu">as.ppp</span>(p.sf.utm)             <span class="co"># Create ppp object</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p.ppp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ppp"</code></pre>
+</div>
+</div>
+<p>Note that if the point layer has an attribute table, its attributes will be converted to <code>ppp</code> <em>marks</em>. These attribute values can be accessed via <code>marks(p.ppp)</code>.</p>
+</section>
+<section id="app1_5_4" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="app1_5_4">Converting a <code>SpatRaster</code> object to an <code>im</code> object</h3>
+<p>To create a <code>spatstat</code> <code>im</code> raster object from a <code>SpatRaster</code> object, you will need to first create a three column dataframe from the <code>SpatRaster</code> objects with the first two columns defining the X and Y coordinate values of each cell, and the third column defining the cell values</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(elev.r,<span class="at">xy=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>elev.im <span class="ot">&lt;-</span> <span class="fu">as.im</span>(df)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(elev.im)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "im"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="app1_6" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_6">Converting to an <code>sf</code> object</h2>
+<p>All aforementioned spatial formats, except <code>owin</code>, can be coerced to an <code>sf</code> object via the <code>st_as_sf</code> function. for example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_as_sf</span>(p.ppp)  <span class="co"># For converting a ppp object to an sf object</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_as_sf</span>(s.sp)   <span class="co"># For converting a Spatial* object to an sf object</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="app1_7" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_7">Dissecting the <code>sf</code> file object</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s.sf,<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 3 features and 5 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 379071.8 ymin: 4936182 xmax: 596500.1 ymax: 5255569
+Projected CRS: NAD83 / UTM zone 19N
+         NAME Income   NoSchool NoSchoolSE IncomeSE                       geometry
+1   Aroostook  21024 0.01338720 0.00140696  250.909 MULTIPOLYGON (((513821.1 51...
+2    Somerset  21025 0.00521153 0.00115002  390.909 MULTIPOLYGON (((379071.8 50...
+3 Piscataquis  21292 0.00633830 0.00212896  724.242 MULTIPOLYGON (((445039.5 51...</code></pre>
+</div>
+</div>
+<p>The first line of output gives us the geometry type, <code>MULTIPOLYGON</code>, a multi-polygon data type. This is also referred to as a multipart polygon. A single-part <code>sf</code> polygon object will adopt the <code>POLYGON</code> geometry.</p>
+<p>The next few lines of output give us the layer’s bounding extent in the layer’s native coordinate system units. You can extract the extent via the <code>st_bbox()</code> function as in <code>st_bbox(s.sf)</code>.</p>
+<p>The following code chunk can be used to extract addition coordinate information from the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(s.sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Depending on the version of the <code>PROJ</code> library used by <code>sf</code>, you can get two different outputs. If your version of <code>sf</code> is built with a version of <code>PROJ</code> older than <code>6.0</code>, the output will consist of an <strong>epsg</strong> code (when available) and a <strong>proj4</strong> string as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>Coordinate Reference System<span class="sc">:</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  EPSG<span class="sc">:</span> <span class="dv">26919</span> </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  proj4string<span class="sc">:</span> <span class="st">"+proj=utm +zone=19 +datum=NAD83 +units=m +no_defs"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If your version of <code>sf</code> is built with a version of <code>PROJ</code> <code>6.0</code> or greater, the output will consist of a user defined CS definition (e.g.&nbsp;an <strong>epsg</strong> code), if available, and a <em>Well Known Text</em> (WKT) formatted coordinate definition that consists of a series of <code>[ ]</code> tags as follows:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: NAD83 / UTM zone 19N 
+  wkt:
+PROJCRS["NAD83 / UTM zone 19N",
+    BASEGEOGCRS["NAD83",
+        DATUM["North American Datum 1983",
+            ELLIPSOID["GRS 1980",6378137,298.257222101,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4269]],
+    CONVERSION["UTM zone 19N",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",0,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",-69,
+            ANGLEUNIT["Degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",0.9996,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",500000,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    ID["EPSG",26919]]</code></pre>
+</div>
+</div>
+<p>The WKT format will usually start with a <code>PROJCRS[...]</code> tag for a projected coordinate system, or a <code>GEOGCRS[...]</code> tag for a geographic coordinate system. More information on coordinate systems in R can be found in <a href="https://mgimond.github.io/Spatial/coordinate-systems-in-r.html">the coordinate systems appendix</a>.</p>
+<p>What remains of the <code>sf</code> summary output is the first few records of the attribute table. You can extract the object’s table to a dedicated data frame via:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>s.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(s.sf)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(s.df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s.df, <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         NAME Income   NoSchool  NoSchoolSE IncomeSE                       geometry
+1   Aroostook  21024 0.01338720 0.001406960  250.909 MULTIPOLYGON (((513821.1 51...
+2    Somerset  21025 0.00521153 0.001150020  390.909 MULTIPOLYGON (((379071.8 50...
+3 Piscataquis  21292 0.00633830 0.002128960  724.242 MULTIPOLYGON (((445039.5 51...
+4   Penobscot  23307 0.00684534 0.001025450  242.424 MULTIPOLYGON (((472271.3 49...
+5  Washington  20015 0.00478188 0.000966036  327.273 MULTIPOLYGON (((645446.5 49...</code></pre>
+</div>
+</div>
+<p>The above chunk will also create a geometry column. This column is somewhat unique in that it stores its contents as a <strong>list</strong> of geometry coordinate pairs (polygon vertex coordinate values in this example).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(s.df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   16 obs. of  6 variables:
+ $ NAME      : chr  "Aroostook" "Somerset" "Piscataquis" "Penobscot" ...
+ $ Income    : int  21024 21025 21292 23307 20015 21744 21885 23020 25652 24268 ...
+ $ NoSchool  : num  0.01339 0.00521 0.00634 0.00685 0.00478 ...
+ $ NoSchoolSE: num  0.001407 0.00115 0.002129 0.001025 0.000966 ...
+ $ IncomeSE  : num  251 391 724 242 327 ...
+ $ geometry  :sfc_MULTIPOLYGON of length 16; first list element: List of 1
+  ..$ :List of 1
+  .. ..$ : num [1:32, 1:2] 513821 513806 445039 422284 424687 ...
+  ..- attr(*, "class")= chr [1:3] "XY" "MULTIPOLYGON" "sfg"</code></pre>
+</div>
+</div>
+<p>You can also opt to remove this column prior to creating the dataframe as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>s.nogeom.df <span class="ot">&lt;-</span> <span class="fu">st_set_geometry</span>(s.sf, <span class="cn">NULL</span>) </span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(s.nogeom.df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s.nogeom.df, <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         NAME Income   NoSchool  NoSchoolSE IncomeSE
+1   Aroostook  21024 0.01338720 0.001406960  250.909
+2    Somerset  21025 0.00521153 0.001150020  390.909
+3 Piscataquis  21292 0.00633830 0.002128960  724.242
+4   Penobscot  23307 0.00684534 0.001025450  242.424
+5  Washington  20015 0.00478188 0.000966036  327.273</code></pre>
+</div>
+</div>
+</section>
+<section id="app1_8" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="app1_8">Exporting to different data file formats</h2>
+<p>You can export an <code>sf</code> object to many different spatial file formats such as a shapefile or a geopackage.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(s.sf, <span class="st">"shapefile_out.shp"</span>, <span class="at">driver =</span> <span class="st">"ESRI Shapefile"</span>)  <span class="co"># create to a shapefile </span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(s.sf, <span class="st">"s.gpkg"</span>, <span class="at">driver =</span> <span class="st">"GPKG"</span>)  <span class="co"># Create a geopackage file</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If the file you are writing to already exists, the above will throw an error. To force an overwrite, simply add the <code>delete_layer = TRUE</code> argument to the <code>st_write</code> function.</p>
+<p>You can see a list of writable vector formats via:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gdal</span>(<span class="at">drivers =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">subset</span>(can <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"write"</span>, <span class="st">"read/write"</span> ) <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">"vector"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The value in the <code>name</code> column is the driver name to pass to the <code>driver =</code> argument in the <code>st_write()</code> function.</p>
+<p>To export a raster to a data file, use <code>writeRaster()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(elev.r, <span class="st">"elev_out.tif"</span>, <span class="at">gdal =</span> <span class="st">"GTiff"</span> ) <span class="co"># Create a geoTiff file</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeRaster</span>(elev.r, <span class="st">"elev_out.img"</span>, <span class="at">gdal =</span> <span class="st">"HFA"</span> )  <span class="co"># Create an Imagine raster file</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can see a list of writable raster formats via:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gdal</span>(<span class="at">drivers =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">subset</span>(can <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"write"</span>, <span class="st">"read/write"</span> ) <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">"raster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The value in the <code>name</code> column is the driver name to pass to the <code>gdal =</code> argument in the <code>writeRaster()</code> function.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./a02_mapping_data.html" class="pagination-link" aria-label="Mapping data in R">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Mapping data in R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
